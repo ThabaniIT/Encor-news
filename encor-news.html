@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encor — The News, Refined</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f7f4;
+  --surface: #ffffff;
+  --surface2: #f2efe9;
+  --text: #0f0e0d;
+  --text2: #5a5650;
+  --text3: #9a9590;
+  --border: #e4e0d8;
+  --accent: #c8381a;
+  --accent2: #e84a26;
+  --nav-bg: rgba(249,247,244,0.92);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius: 4px;
+  --radius-lg: 8px;
+  --transition: 0.2s ease;
+}
+[data-theme="dark"] {
+  --bg: #111110;
+  --surface: #1c1b19;
+  --surface2: #232220;
+  --text: #f0ede8;
+  --text2: #a09b94;
+  --text3: #6a6560;
+  --border: #2e2c29;
+  --accent: #e84a26;
+  --accent2: #ff5c35;
+  --nav-bg: rgba(17,17,16,0.92);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background var(--transition), color var(--transition);
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { display: block; width: 100%; object-fit: cover; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.nav-inner {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; align-items: center; gap: 0;
+}
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 26px; font-weight: 900;
+  letter-spacing: -1px;
+  color: var(--text);
+  padding: 16px 0;
+  flex-shrink: 0;
+}
+.nav-logo span { color: var(--accent); }
+.nav-links {
+  display: flex; align-items: center; gap: 0;
+  margin-left: 32px; flex: 1;
+  list-style: none;
+  overflow-x: auto; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
+.nav-links li a {
+  display: block; padding: 18px 14px;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+  color: var(--text2);
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+.nav-links li a:hover, .nav-links li a.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+.nav-actions {
+  display: flex; align-items: center; gap: 8px;
+  margin-left: auto; flex-shrink: 0;
+}
+.nav-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  color: var(--text2);
+  transition: background var(--transition), color var(--transition);
+  font-size: 16px;
+}
+.nav-btn:hover { background: var(--surface2); color: var(--text); }
+.nav-subscribe {
+  padding: 8px 18px;
+  background: var(--accent);
+  color: white;
+  border-radius: 100px;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+.nav-subscribe:hover { background: var(--accent2); transform: translateY(-1px); }
+.hamburger { display: none; }
+
+/* SEARCH OVERLAY */
+.search-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 80px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+.search-overlay.open { opacity: 1; pointer-events: all; }
+.search-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 600px; max-width: calc(100vw - 48px);
+  padding: 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.search-input {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+}
+.search-input input {
+  flex: 1; border: none; outline: none; background: none;
+  font-size: 18px; font-family: var(--font-sans);
+  color: var(--text);
+}
+.search-input input::placeholder { color: var(--text3); }
+.search-close {
+  color: var(--text3); font-size: 20px;
+  transition: color var(--transition);
+}
+.search-close:hover { color: var(--text); }
+.search-hints {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.search-hint {
+  padding: 4px 12px;
+  background: var(--surface2);
+  border-radius: 100px;
+  font-size: 12px; color: var(--text2);
+  cursor: pointer;
+  transition: background var(--transition);
+}
+.search-hint:hover { background: var(--border); }
+
+/* BREAKING TICKER */
+.ticker {
+  background: var(--accent);
+  color: white;
+  padding: 8px 0;
+  overflow: hidden;
+}
+.ticker-inner {
+  display: flex; align-items: center; gap: 0;
+}
+.ticker-label {
+  background: rgba(0,0,0,0.25);
+  padding: 2px 16px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  white-space: nowrap; flex-shrink: 0;
+}
+.ticker-track {
+  overflow: hidden; flex: 1;
+}
+.ticker-items {
+  display: flex; white-space: nowrap;
+  animation: ticker-scroll 40s linear infinite;
+}
+.ticker-item {
+  padding: 0 32px;
+  font-size: 13px; font-weight: 500;
+}
+.ticker-item::before { content: '•'; margin-right: 32px; opacity: 0.6; }
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* HERO */
+.hero {
+  max-width: 1280px; margin: 0 auto;
+  padding: 48px 24px 32px;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 2px;
+}
+.hero-main { position: relative; }
+.hero-img-wrap {
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface2);
+}
+.hero-img-wrap img { transition: transform 0.6s ease; height: 100%; }
+.hero-main:hover .hero-img-wrap img { transform: scale(1.02); }
+.hero-content { padding: 20px 0 8px; }
+.hero-cat {
+  display: inline-block;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+  color: var(--accent); margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 800; line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+.hero-title a:hover { color: var(--accent); }
+.hero-excerpt {
+  font-size: 16px; color: var(--text2); line-height: 1.7;
+  margin-bottom: 16px;
+  max-width: 56ch;
+}
+.hero-meta { display: flex; align-items: center; gap: 16px; }
+.author-chip {
+  display: flex; align-items: center; gap: 8px;
+}
+.author-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  object-fit: cover; background: var(--surface2);
+  flex-shrink: 0;
+}
+.author-name { font-size: 13px; font-weight: 500; }
+.meta-sep { color: var(--border); }
+.meta-date { font-size: 13px; color: var(--text3); }
+.meta-read { font-size: 13px; color: var(--text3); }
+
+/* HERO SIDEBAR */
+.hero-sidebar {
+  border-left: 1px solid var(--border);
+  padding-left: 24px;
+  display: flex; flex-direction: column; gap: 0;
+}
+.side-story {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+.side-story:last-child { border-bottom: none; }
+.side-story-img {
+  aspect-ratio: 16/9;
+  overflow: hidden; border-radius: var(--radius);
+  background: var(--surface2);
+  margin-bottom: 12px;
+}
+.side-story-img img { transition: transform 0.4s ease; height: 100%; }
+.side-story:hover .side-story-img img { transform: scale(1.04); }
+.side-title {
+  font-family: var(--font-serif);
+  font-size: 17px; font-weight: 700; line-height: 1.3;
+  margin-bottom: 8px;
+}
+.side-title a:hover { color: var(--accent); }
+.side-meta { font-size: 12px; color: var(--text3); }
+
+/* SECTION HEADER */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 24px;
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: 22px; font-weight: 700;
+  display: flex; align-items: center; gap: 12px;
+}
+.section-title::before {
+  content: '';
+  display: block; width: 4px; height: 22px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.section-link {
+  font-size: 13px; font-weight: 500;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 4px;
+  transition: gap var(--transition);
+}
+.section-link:hover { gap: 8px; }
+
+/* WRAPPER */
+.wrapper {
+  max-width: 1280px; margin: 0 auto;
+  padding: 0 24px;
+}
+.section-block { padding: 40px 0; border-top: 1px solid var(--border); }
+
+/* TRENDING */
+.trending-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.trend-card {
+  background: var(--surface);
+  padding: 24px;
+  transition: background var(--transition);
+}
+.trend-card:hover { background: var(--surface2); }
+.trend-num {
+  font-family: var(--font-serif);
+  font-size: 48px; font-weight: 900;
+  color: var(--border);
+  line-height: 1; margin-bottom: 12px;
+  transition: color var(--transition);
+}
+.trend-card:hover .trend-num { color: var(--accent); }
+.trend-cat { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+.trend-title {
+  font-family: var(--font-serif);
+  font-size: 16px; font-weight: 700; line-height: 1.35;
+  margin-bottom: 10px;
+}
+.trend-title a:hover { color: var(--accent); }
+.trend-meta { font-size: 12px; color: var(--text3); }
+
+/* CARDS GRID */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.article-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+  transition: transform var(--transition), box-shadow var(--transition);
+  display: flex; flex-direction: column;
+}
+.article-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.card-img {
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  background: var(--surface2);
+}
+.card-img img { transition: transform 0.5s ease; height: 100%; }
+.article-card:hover .card-img img { transform: scale(1.05); }
+.card-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
+.card-cat {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 10px;
+}
+.card-title {
+  font-family: var(--font-serif);
+  font-size: 18px; font-weight: 700; line-height: 1.3;
+  margin-bottom: 10px; flex: 1;
+}
+.card-title a:hover { color: var(--accent); }
+.card-excerpt { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 16px; }
+.card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border); padding-top: 14px;
+  margin-top: auto;
+}
+.card-author { font-size: 12px; font-weight: 500; }
+.card-date { font-size: 12px; color: var(--text3); }
+
+/* FEATURE WIDE */
+.feature-wide {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+.feature-img {
+  aspect-ratio: 4/3;
+  overflow: hidden; background: var(--surface2);
+}
+.feature-img img { transition: transform 0.6s ease; height: 100%; }
+.feature-wide:hover .feature-img img { transform: scale(1.03); }
+.feature-body {
+  padding: 40px;
+  display: flex; flex-direction: column; justify-content: center;
+  border-left: 1px solid var(--border);
+}
+.feature-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px;
+  background: var(--accent);
+  color: white;
+  border-radius: 100px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px; align-self: flex-start;
+}
+.feature-title {
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 800; line-height: 1.2;
+  margin-bottom: 16px;
+}
+.feature-title a:hover { color: var(--accent); }
+.feature-excerpt { font-size: 15px; color: var(--text2); line-height: 1.7; margin-bottom: 24px; }
+.feature-meta { font-size: 13px; color: var(--text3); }
+.feature-meta strong { color: var(--text); }
+
+/* LIST STORIES */
+.list-stories { display: flex; flex-direction: column; gap: 0; }
+.list-story {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+.list-story:last-child { border-bottom: none; }
+.list-img {
+  aspect-ratio: 1;
+  border-radius: var(--radius);
+  overflow: hidden; background: var(--surface2);
+}
+.list-img img { height: 100%; transition: transform 0.4s; }
+.list-story:hover .list-img img { transform: scale(1.06); }
+.list-cat { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 6px; }
+.list-title {
+  font-family: var(--font-serif);
+  font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 6px;
+}
+.list-title a:hover { color: var(--accent); }
+.list-meta { font-size: 12px; color: var(--text3); }
+
+/* TWO COL LAYOUT */
+.two-col { display: grid; grid-template-columns: 1fr 340px; gap: 40px; }
+.sidebar-widget { }
+.widget-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text3);
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+/* OPINION */
+.opinion-cards {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 24px;
+}
+.opinion-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--card-shadow);
+  border-top: 3px solid var(--accent);
+}
+.op-author {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+}
+.op-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  object-fit: cover; background: var(--surface2);
+}
+.op-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+.op-role { font-size: 12px; color: var(--text3); }
+.op-title {
+  font-family: var(--font-serif);
+  font-size: 18px; font-weight: 700; line-height: 1.35; margin-bottom: 12px;
+}
+.op-title a:hover { color: var(--accent); }
+.op-excerpt { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+/* NEWSLETTER */
+.newsletter-section {
+  background: var(--text);
+  color: var(--bg);
+  padding: 72px 24px;
+  text-align: center;
+}
+.newsletter-inner { max-width: 520px; margin: 0 auto; }
+.newsletter-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; opacity: 0.5; margin-bottom: 16px;
+}
+.newsletter-title {
+  font-family: var(--font-serif);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900; line-height: 1.1; margin-bottom: 16px;
+}
+.newsletter-title em { color: var(--accent2); font-style: italic; }
+.newsletter-desc { font-size: 15px; opacity: 0.65; margin-bottom: 32px; }
+.newsletter-form {
+  display: flex; gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 100px;
+  padding: 6px;
+}
+.newsletter-form input {
+  flex: 1; border: none; background: none; outline: none;
+  padding: 10px 16px;
+  font-size: 14px; font-family: var(--font-sans);
+  color: var(--bg);
+}
+.newsletter-form input::placeholder { opacity: 0.4; }
+.newsletter-form button {
+  padding: 10px 24px;
+  background: var(--accent);
+  color: white; border-radius: 100px;
+  font-size: 14px; font-weight: 600;
+  transition: background var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+.newsletter-form button:hover { background: var(--accent2); transform: scale(1.02); }
+.newsletter-note { font-size: 12px; opacity: 0.4; margin-top: 14px; }
+
+/* VIDEO / MEDIA */
+.media-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 16px;
+}
+.media-card {
+  border-radius: var(--radius-lg); overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  position: relative; cursor: pointer;
+}
+.media-img {
+  aspect-ratio: 9/16;
+  background: var(--surface2); position: relative;
+}
+.media-img img { height: 100%; }
+.play-btn {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.3);
+  transition: background var(--transition);
+}
+.media-card:hover .play-btn { background: rgba(0,0,0,0.5); }
+.play-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--accent);
+  transform: scale(1);
+  transition: transform var(--transition);
+}
+.media-card:hover .play-icon { transform: scale(1.1); }
+.media-body { padding: 14px; }
+.media-title {
+  font-size: 14px; font-weight: 600; line-height: 1.3; margin-bottom: 6px;
+}
+.media-dur { font-size: 12px; color: var(--text3); }
+
+/* FOOTER */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 56px 24px 32px;
+}
+.footer-inner { max-width: 1280px; margin: 0 auto; }
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 40px; padding-bottom: 48px; border-bottom: 1px solid var(--border);
+}
+.footer-brand {}
+.footer-logo {
+  font-family: var(--font-serif);
+  font-size: 32px; font-weight: 900; letter-spacing: -1px;
+  margin-bottom: 14px;
+}
+.footer-logo span { color: var(--accent); }
+.footer-tagline { font-size: 14px; color: var(--text2); line-height: 1.6; max-width: 28ch; margin-bottom: 24px; }
+.social-links { display: flex; gap: 8px; }
+.social-btn {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; color: var(--text2);
+  transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+.social-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(200,56,26,0.06); }
+.footer-col-title {
+  font-size: 12px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text3);
+  margin-bottom: 16px;
+}
+.footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  font-size: 14px; color: var(--text2);
+  transition: color var(--transition);
+}
+.footer-links a:hover { color: var(--accent); }
+.footer-bottom {
+  padding-top: 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; color: var(--text3);
+}
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a { transition: color var(--transition); }
+.footer-legal a:hover { color: var(--text); }
+
+/* PLACEHOLDER IMAGES */
+.ph {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface2);
+}
+.img-placeholder {
+  width: 100%; height: 100%;
+  position: relative; overflow: hidden;
+}
+.img-ph-inner {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, var(--surface2) 0%, var(--border) 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: var(--text3);
+}
+
+/* DARK/LIGHT animations */
+* { transition: background-color 0.25s ease, border-color 0.25s ease; }
+.hero-title, .card-title, .trend-title, .feature-title, .list-title, .op-title, .side-title {
+  transition: color 0.15s ease;
+}
+
+/* SCROLL ANIMATIONS */
+.fade-in {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-in.visible { opacity: 1; transform: none; }
+
+/* MOBILE MENU */
+.mobile-menu {
+  display: none;
+  position: fixed; inset: 0; z-index: 150;
+  background: var(--surface);
+  padding: 80px 24px 32px;
+  flex-direction: column; gap: 0;
+}
+.mobile-menu.open { display: flex; }
+.mobile-menu-links { list-style: none; }
+.mobile-menu-links li a {
+  display: block; padding: 16px 0;
+  font-size: 22px; font-family: var(--font-serif); font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+.mobile-menu-close {
+  position: absolute; top: 20px; right: 20px;
+  font-size: 24px; color: var(--text2);
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .trending-grid { grid-template-columns: repeat(2,1fr); }
+  .cards-grid { grid-template-columns: repeat(2,1fr); }
+  .opinion-cards { grid-template-columns: repeat(2,1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-sidebar { border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 24px; margin-top: 24px; }
+  .hero-sidebar .side-stories { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .hero-sidebar .side-story { padding: 0; border-bottom: none; }
+  .two-col { grid-template-columns: 1fr; }
+  .feature-wide { grid-template-columns: 1fr; }
+  .feature-img { aspect-ratio: 16/9; }
+  .media-grid { grid-template-columns: repeat(2,1fr); }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+}
+@media (max-width: 640px) {
+  .trending-grid { grid-template-columns: 1fr; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .opinion-cards { grid-template-columns: 1fr; }
+  .media-grid { grid-template-columns: repeat(2,1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+  .newsletter-form { flex-direction: column; border-radius: 12px; }
+  .newsletter-form button { border-radius: 8px; }
+}
+</style>
+</head>
+<body>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="mobile-menu-close nav-btn" onclick="toggleMenu()">&#10005;</button>
+  <ul class="mobile-menu-links">
+    <li><a href="#">Politics</a></li>
+    <li><a href="#">Business</a></li>
+    <li><a href="#">Technology</a></li>
+    <li><a href="#">Entertainment</a></li>
+    <li><a href="#">Sports</a></li>
+    <li><a href="#">Culture</a></li>
+    <li><a href="#">Opinion</a></li>
+    <li><a href="#">Video</a></li>
+  </ul>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay" onclick="closeSearch(event)">
+  <div class="search-box">
+    <div class="search-input">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Search stories, topics, authors…" id="searchInput" autofocus>
+      <button class="search-close" onclick="document.getElementById('searchOverlay').classList.remove('open')">&#10005;</button>
+    </div>
+    <div class="search-hints">
+      <span class="search-hint">AI & Technology</span>
+      <span class="search-hint">Climate Crisis</span>
+      <span class="search-hint">Global Markets</span>
+      <span class="search-hint">Election 2026</span>
+      <span class="search-hint">Space Exploration</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Enc<span>o</span>r</a>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#politics">Politics</a></li>
+      <li><a href="#business">Business</a></li>
+      <li><a href="#tech">Technology</a></li>
+      <li><a href="#entertainment">Entertainment</a></li>
+      <li><a href="#sports">Sports</a></li>
+      <li><a href="#culture">Culture</a></li>
+      <li><a href="#opinion">Opinion</a></li>
+      <li><a href="#video">Video</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="nav-btn hamburger" onclick="toggleMenu()" aria-label="Menu">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <button class="nav-btn" onclick="openSearch()" aria-label="Search">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle theme">
+        <svg id="sunIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="moonIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <a href="#newsletter" class="nav-subscribe">Subscribe</a>
+    </div>
+  </div>
+</nav>
+
+<!-- BREAKING TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-label">BREAKING</div>
+    <div class="ticker-track">
+      <div class="ticker-items" id="tickerItems">
+        <span class="ticker-item">Global AI Summit reaches historic agreement on open-source regulation</span>
+        <span class="ticker-item">Federal Reserve signals two additional rate cuts before year end</span>
+        <span class="ticker-item">European Parliament votes on sweeping digital rights framework</span>
+        <span class="ticker-item">Scientists confirm breakthrough in room-temperature superconductivity</span>
+        <span class="ticker-item">Olympic Committee announces 2030 Winter Games host city</span>
+        <span class="ticker-item">OPEC+ extends production cuts amid global demand uncertainty</span>
+        <span class="ticker-item">Global AI Summit reaches historic agreement on open-source regulation</span>
+        <span class="ticker-item">Federal Reserve signals two additional rate cuts before year end</span>
+        <span class="ticker-item">European Parliament votes on sweeping digital rights framework</span>
+        <span class="ticker-item">Scientists confirm breakthrough in room-temperature superconductivity</span>
+        <span class="ticker-item">Olympic Committee announces 2030 Winter Games host city</span>
+        <span class="ticker-item">OPEC+ extends production cuts amid global demand uncertainty</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero fade-in">
+  <div class="hero-main">
+    <div class="hero-img-wrap">
+      <div class="img-ph-inner" style="background:linear-gradient(135deg,#1a2744 0%,#2d4a8a 50%,#1e3a6e 100%);height:100%;display:flex;align-items:center;justify-content:center;">
+        <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.3">
+          <rect x="10" y="20" width="40" height="50" rx="2" fill="white"/>
+          <rect x="60" y="10" width="50" height="60" rx="2" fill="white"/>
+          <circle cx="30" cy="10" r="8" fill="white"/>
+        </svg>
+      </div>
+    </div>
+    <div class="hero-content">
+      <span class="hero-cat">⚡ Breaking</span>
+      <h1 class="hero-title">
+        <a href="#">World Leaders Agree on Landmark AI Governance Treaty at Geneva Summit</a>
+      </h1>
+      <p class="hero-excerpt">In a historic diplomatic breakthrough, representatives from 47 nations signed a comprehensive framework for artificial intelligence oversight, establishing the first global standards for AI development and deployment.</p>
+      <div class="hero-meta">
+        <div class="author-chip">
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#c8381a,#e84a26);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:white;flex-shrink:0">SR</div>
+          <span class="author-name">Sarah Reynolds</span>
+        </div>
+        <span class="meta-sep">·</span>
+        <span class="meta-date">May 21, 2026</span>
+        <span class="meta-sep">·</span>
+        <span class="meta-read">8 min read</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-sidebar">
+    <div class="side-story">
+      <div class="side-story-img">
+        <div style="background:linear-gradient(135deg,#1a3a2a 0%,#2d6b4a 100%);height:100%;display:flex;align-items:center;justify-content:center;opacity:0.8">
+          <svg width="60" height="40" viewBox="0 0 60 40" fill="none"><rect x="5" y="10" width="20" height="25" rx="1" fill="white" opacity="0.4"/><rect x="35" y="5" width="20" height="30" rx="1" fill="white" opacity="0.4"/><path d="M0 35 Q30 20 60 30" stroke="white" stroke-width="2" fill="none" opacity="0.6"/></svg>
+        </div>
+      </div>
+      <span class="side-cat" style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:6px">Business</span>
+      <div class="side-title"><a href="#">Global Markets Rally as Inflation Data Surprises Analysts to the Downside</a></div>
+      <span class="side-meta">James Okafor · 4 min read</span>
+    </div>
+    <div class="side-story">
+      <div class="side-story-img">
+        <div style="background:linear-gradient(135deg,#3a1a1a 0%,#8b2a2a 100%);height:100%;display:flex;align-items:center;justify-content:center;opacity:0.8">
+          <svg width="60" height="40" viewBox="0 0 60 40" fill="none"><circle cx="30" cy="20" r="15" stroke="white" stroke-width="2" fill="none" opacity="0.5"/><circle cx="30" cy="20" r="5" fill="white" opacity="0.4"/><line x1="30" y1="5" x2="30" y2="35" stroke="white" stroke-width="1.5" opacity="0.4"/><line x1="15" y1="20" x2="45" y2="20" stroke="white" stroke-width="1.5" opacity="0.4"/></svg>
+        </div>
+      </div>
+      <span class="side-cat" style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:6px">Politics</span>
+      <div class="side-title"><a href="#">Senate Passes Historic Climate Infrastructure Bill in Bipartisan Vote</a></div>
+      <span class="side-meta">Maria Chen · 6 min read</span>
+    </div>
+    <div class="side-story">
+      <div class="side-story-img">
+        <div style="background:linear-gradient(135deg,#1a2a3a 0%,#2a4a6b 100%);height:100%;display:flex;align-items:center;justify-content:center;opacity:0.8">
+          <svg width="60" height="40" viewBox="0 0 60 40" fill="none"><rect x="10" y="15" width="40" height="20" rx="3" stroke="white" stroke-width="2" fill="none" opacity="0.5"/><circle cx="30" cy="5" r="5" fill="white" opacity="0.4"/><line x1="30" y1="10" x2="30" y2="15" stroke="white" stroke-width="1.5" opacity="0.4"/></svg>
+        </div>
+      </div>
+      <span class="side-cat" style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:6px">Technology</span>
+      <div class="side-title"><a href="#">SpaceX Starship Completes First Commercial Payload Mission to Lunar Orbit</a></div>
+      <span class="side-meta">Alex Torres · 5 min read</span>
+    </div>
+  </div>
+</section>
+
+<!-- TRENDING -->
+<section class="section-block fade-in" id="trending">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Trending Now</h2>
+      <a href="#" class="section-link">View all →</a>
+    </div>
+    <div class="trending-grid">
+      <div class="trend-card">
+        <div class="trend-num">01</div>
+        <div class="trend-cat">Technology</div>
+        <div class="trend-title"><a href="#">OpenAI's New Reasoning Model Achieves PhD-Level Performance Across 12 Disciplines</a></div>
+        <div class="trend-meta">142K reads · 3h ago</div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-num">02</div>
+        <div class="trend-cat">Sports</div>
+        <div class="trend-title"><a href="#">Champions League Final: Real Madrid Edges Bayern in Extra Time Classic</a></div>
+        <div class="trend-meta">98K reads · 5h ago</div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-num">03</div>
+        <div class="trend-cat">Business</div>
+        <div class="trend-title"><a href="#">Apple Unveils Vision Pro 2 With Neural Interface and 72-Hour Battery Life</a></div>
+        <div class="trend-meta">87K reads · 7h ago</div>
+      </div>
+      <div class="trend-card">
+        <div class="trend-num">04</div>
+        <div class="trend-cat">Culture</div>
+        <div class="trend-title"><a href="#">Cannes Palme d'Or Goes to Nigerian Director in Groundbreaking Ceremony</a></div>
+        <div class="trend-meta">61K reads · 9h ago</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POLITICS -->
+<section class="section-block fade-in" id="politics">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Politics</h2>
+      <a href="#" class="section-link">More Politics →</a>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="feature-wide" style="margin-bottom:24px">
+          <div class="feature-img">
+            <div style="background:linear-gradient(135deg,#0f1e3a 0%,#1a3a6e 60%,#2a5ba0 100%);height:100%;display:flex;align-items:center;justify-content:center;">
+              <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.4"><rect x="10" y="20" width="60" height="35" rx="2" stroke="white" stroke-width="2"/><rect x="20" y="10" width="40" height="15" rx="1" fill="white"/><line x1="40" y1="5" x2="40" y2="10" stroke="white" stroke-width="2"/><rect x="30" y="35" width="20" height="15" fill="white" opacity="0.5"/></svg>
+            </div>
+          </div>
+          <div class="feature-body">
+            <span class="feature-tag">Analysis</span>
+            <div class="feature-title"><a href="#">How the New AI Treaty Will Reshape the Geopolitics of Technological Power</a></div>
+            <p class="feature-excerpt">The Geneva Accord marks a fundamental shift in how nations negotiate technological sovereignty, with implications that will unfold over the next decade.</p>
+            <div class="feature-meta"><strong>Elena Vasquez</strong> · Chief Political Correspondent · 12 min read</div>
+          </div>
+        </div>
+        <div class="list-stories">
+          <div class="list-story">
+            <div class="list-img">
+              <div style="background:linear-gradient(135deg,#1a2030,#2d3a5a);height:100%;display:flex;align-items:center;justify-content:center;"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" opacity="0.5"><circle cx="15" cy="15" r="12" stroke="white" stroke-width="1.5"/><path d="M8 15 Q15 8 22 15 Q15 22 8 15Z" fill="white"/></svg></div>
+            </div>
+            <div>
+              <div class="list-cat">Policy</div>
+              <div class="list-title"><a href="#">Congress Approves $2.4 Trillion Infrastructure Renewal Package</a></div>
+              <div class="list-meta">David Park · 7 min read · 2h ago</div>
+            </div>
+          </div>
+          <div class="list-story">
+            <div class="list-img">
+              <div style="background:linear-gradient(135deg,#2a1a0f,#5a3010);height:100%;display:flex;align-items:center;justify-content:center;"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" opacity="0.5"><rect x="5" y="10" width="20" height="15" rx="1" stroke="white" stroke-width="1.5"/><line x1="15" y1="5" x2="15" y2="10" stroke="white" stroke-width="1.5"/></svg></div>
+            </div>
+            <div>
+              <div class="list-cat">International</div>
+              <div class="list-title"><a href="#">G20 Leaders Draft Emergency Protocol for Autonomous Weapons Systems</a></div>
+              <div class="list-meta">Priya Sharma · 9 min read · 4h ago</div>
+            </div>
+          </div>
+          <div class="list-story">
+            <div class="list-img">
+              <div style="background:linear-gradient(135deg,#0f2a1a,#1a5a30);height:100%;display:flex;align-items:center;justify-content:center;"><svg width="30" height="30" viewBox="0 0 30 30" fill="none" opacity="0.5"><path d="M5 25 L15 5 L25 25Z" stroke="white" stroke-width="1.5" fill="none"/><line x1="10" y1="25" x2="20" y2="25" stroke="white" stroke-width="1.5"/></svg></div>
+            </div>
+            <div>
+              <div class="list-cat">Elections</div>
+              <div class="list-title"><a href="#">Voter Registration Numbers Reach Historic High Ahead of Midterm Season</a></div>
+              <div class="list-meta">Tom Bradley · 5 min read · 6h ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-widget">
+        <div class="widget-title">In Focus</div>
+        <div class="list-stories">
+          <div class="list-story" style="grid-template-columns:80px 1fr;gap:12px">
+            <div class="list-img"><div style="background:linear-gradient(135deg,#2a0f1a,#5a1a2a);height:100%;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" opacity="0.5"><circle cx="12" cy="8" r="5" stroke="white" stroke-width="1.5"/><path d="M3 21c0-5 18-5 18 0" stroke="white" stroke-width="1.5"/></svg></div></div>
+            <div><div class="list-cat">Opinion</div><div class="list-title" style="font-size:14px"><a href="#">Why Democratic Backsliding Is the Story of Our Era</a></div><div class="list-meta">Rachel Kim · 6 min</div></div>
+          </div>
+          <div class="list-story" style="grid-template-columns:80px 1fr;gap:12px">
+            <div class="list-img"><div style="background:linear-gradient(135deg,#0f1a2a,#1a2a4a);height:100%;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" opacity="0.5"><rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-width="1.5"/><line x1="8" y1="12" x2="16" y2="12" stroke="white" stroke-width="1.5"/></svg></div></div>
+            <div><div class="list-cat">Data</div><div class="list-title" style="font-size:14px"><a href="#">Polling Averages Shift as Key Battleground States Tighten</a></div><div class="list-meta">Data Desk · 4 min</div></div>
+          </div>
+          <div class="list-story" style="grid-template-columns:80px 1fr;gap:12px">
+            <div class="list-img"><div style="background:linear-gradient(135deg,#1a2a0f,#2a4a1a);height:100%;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" opacity="0.5"><path d="M12 2L2 7l10 5 10-5-10-5z" stroke="white" stroke-width="1.5"/><path d="M2 17l10 5 10-5" stroke="white" stroke-width="1.5"/></svg></div></div>
+            <div><div class="list-cat">World</div><div class="list-title" style="font-size:14px"><a href="#">UN Security Council Passes Resolution on Autonomous Conflict Zones</a></div><div class="list-meta">World Desk · 8 min</div></div>
+          </div>
+        </div>
+        <div style="margin-top:28px;padding:20px;background:var(--surface2);border-radius:var(--radius-lg)">
+          <div class="widget-title" style="border-bottom:none;padding-bottom:0;margin-bottom:8px">📊 Poll of the Day</div>
+          <p style="font-size:15px;font-weight:600;font-family:var(--font-serif);margin-bottom:16px;line-height:1.4">Should AI systems be required to disclose their influence on news content?</p>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="poll-opt" data-val="yes" onclick="vote(this)" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:space-between">
+              <span>Yes, always</span><span class="poll-pct" style="color:var(--text3)">62%</span>
+            </div>
+            <div class="poll-opt" data-val="no" onclick="vote(this)" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:space-between">
+              <span>No, not necessary</span><span class="poll-pct" style="color:var(--text3)">21%</span>
+            </div>
+            <div class="poll-opt" data-val="dep" onclick="vote(this)" style="padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:space-between">
+              <span>Depends on context</span><span class="poll-pct" style="color:var(--text3)">17%</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin-top:10px">14,832 votes · Non-scientific</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECHNOLOGY -->
+<section class="section-block fade-in" id="tech">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Technology</h2>
+      <a href="#" class="section-link">More Technology →</a>
+    </div>
+    <div class="cards-grid">
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#0a0a1a 0%,#1a1a3a 50%,#0a1a2a 100%);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="10" y="15" width="60" height="35" rx="4" stroke="white" stroke-width="1.5"/><circle cx="25" cy="32" r="8" stroke="white" stroke-width="1.5"/><line x1="38" y1="25" x2="60" y2="25" stroke="white" stroke-width="1.5"/><line x1="38" y1="32" x2="60" y2="32" stroke="white" stroke-width="1.5"/><line x1="38" y1="39" x2="52" y2="39" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Artificial Intelligence</div>
+          <div class="card-title"><a href="#">Claude 4 Achieves Human-Level Performance on Full Software Engineering Benchmark</a></div>
+          <p class="card-excerpt">The latest model from Anthropic marks a new milestone in agentic AI capabilities, completing complex multi-file codebases autonomously.</p>
+          <div class="card-footer">
+            <span class="card-author">Tech Desk</span>
+            <span class="card-date">May 21</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#1a0a2a 0%,#3a1a5a 50%,#2a0a4a 100%);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><circle cx="40" cy="30" r="20" stroke="white" stroke-width="1.5"/><circle cx="40" cy="30" r="10" stroke="white" stroke-width="1.5"/><circle cx="40" cy="30" r="3" fill="white"/><line x1="20" y1="30" x2="30" y2="30" stroke="white" stroke-width="1.5"/><line x1="50" y1="30" x2="60" y2="30" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Space Tech</div>
+          <div class="card-title"><a href="#">Quantum Internet Node Goes Live, Enabling Unhackable Communications Across 3 Cities</a></div>
+          <p class="card-excerpt">The prototype network demonstrates entanglement-based encryption that theoretically cannot be intercepted without detection.</p>
+          <div class="card-footer">
+            <span class="card-author">Aisha Diallo</span>
+            <span class="card-date">May 20</span>
+          </div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#0a1a0a 0%,#1a3a1a 50%,#0a2a0a 100%);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="15" y="10" width="50" height="40" rx="3" stroke="white" stroke-width="1.5"/><line x1="15" y1="22" x2="65" y2="22" stroke="white" stroke-width="1.5"/><rect x="23" y="30" width="10" height="12" rx="1" fill="white" opacity="0.4"/><rect x="40" y="25" width="10" height="17" rx="1" fill="white" opacity="0.4"/><rect x="57" y="32" width="5" height="10" rx="1" fill="white" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Green Tech</div>
+          <div class="card-title"><a href="#">Perovskite Solar Cells Hit 38% Efficiency Record, Threatening Silicon's Market Dominance</a></div>
+          <p class="card-excerpt">Researchers at MIT and CSIRO collaborate on a manufacturing breakthrough that could cut photovoltaic costs by 60% within five years.</p>
+          <div class="card-footer">
+            <span class="card-author">Yuki Tanaka</span>
+            <span class="card-date">May 19</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS -->
+<section class="section-block fade-in" id="business">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Business</h2>
+      <a href="#" class="section-link">More Business →</a>
+    </div>
+    <div class="cards-grid">
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#1a1000,#3a2800,#2a1a00);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><polyline points="10,50 25,30 40,38 55,15 70,20" stroke="white" stroke-width="2" fill="none"/><line x1="10" y1="50" x2="70" y2="50" stroke="white" stroke-width="1" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Markets</div>
+          <div class="card-title"><a href="#">S&P 500 Closes at Record High as Tech Earnings Surpass Wall Street Expectations</a></div>
+          <p class="card-excerpt">The index gained 2.3% in a single session — the largest single-day surge since the post-pandemic rally of 2023.</p>
+          <div class="card-footer"><span class="card-author">Finance Desk</span><span class="card-date">May 21</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#001a0a,#003a1a,#002a12);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="20" y="10" width="40" height="40" rx="20" stroke="white" stroke-width="1.5"/><path d="M30 30 Q40 22 50 30 Q40 38 30 30Z" fill="white" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Startups</div>
+          <div class="card-title"><a href="#">Fusion Energy Startup Commonwealth Fusion Raises $4.2B Series D at $28B Valuation</a></div>
+          <p class="card-excerpt">The raise is the largest in clean energy history and signals growing investor confidence in commercial fusion power by 2032.</p>
+          <div class="card-footer"><span class="card-author">Carlos Mendez</span><span class="card-date">May 20</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#1a001a,#3a003a,#2a0028);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="10" y="25" width="20" height="25" rx="1" fill="white" opacity="0.3"/><rect x="35" y="15" width="20" height="35" rx="1" fill="white" opacity="0.3"/><rect x="60" y="10" width="15" height="40" rx="1" fill="white" opacity="0.3"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Retail</div>
+          <div class="card-title"><a href="#">Amazon's AI Shopping Assistant Drives 34% Surge in Premium Product Conversions</a></div>
+          <p class="card-excerpt">The personalization engine, powered by proprietary recommendation models, has reshaped how consumers discover high-margin categories.</p>
+          <div class="card-footer"><span class="card-author">Nina Patel</span><span class="card-date">May 19</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENTERTAINMENT -->
+<section class="section-block fade-in" id="entertainment">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Entertainment</h2>
+      <a href="#" class="section-link">More Entertainment →</a>
+    </div>
+    <div class="cards-grid">
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#1a0a0f,#3a1520,#2a0a15);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><polygon points="30,15 65,30 30,45" fill="white" opacity="0.4"/><circle cx="40" cy="30" r="20" stroke="white" stroke-width="1.5" fill="none"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Film</div>
+          <div class="card-title"><a href="#">Cannes 2026: A Retrospective on the Year Cinema Confronted Its AI Reckoning</a></div>
+          <p class="card-excerpt">From Palme d'Or contenders to experimental short films, this year's festival grappled openly with the question of machine creativity.</p>
+          <div class="card-footer"><span class="card-author">Sophie Laurent</span><span class="card-date">May 21</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#0a1020,#151a35,#0a1525);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="5" y="20" width="70" height="25" rx="3" stroke="white" stroke-width="1.5"/><circle cx="20" cy="32" r="7" fill="white" opacity="0.3"/><line x1="35" y1="25" x2="70" y2="25" stroke="white" stroke-width="1"/><line x1="35" y1="32" x2="70" y2="32" stroke="white" stroke-width="1"/><line x1="35" y1="39" x2="60" y2="39" stroke="white" stroke-width="1"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Music</div>
+          <div class="card-title"><a href="#">Beyoncé's Surprise Double Album Breaks Every Streaming Record Within 24 Hours</a></div>
+          <p class="card-excerpt">The project, recorded in complete secrecy over 18 months, features collaborations across five genres and three continents.</p>
+          <div class="card-footer"><span class="card-author">Marcus Johnson</span><span class="card-date">May 20</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#100520,#1e0a35,#150525);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="10" y="10" width="60" height="40" rx="3" stroke="white" stroke-width="1.5"/><line x1="10" y1="22" x2="70" y2="22" stroke="white" stroke-width="1" opacity="0.5"/><rect x="22" y="30" width="12" height="12" rx="1" fill="white" opacity="0.3"/><rect x="42" y="30" width="12" height="12" rx="1" fill="white" opacity="0.3"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Television</div>
+          <div class="card-title"><a href="#">HBO's 'Meridian' Shatters Peak Concurrent Viewership With Season 3 Finale</a></div>
+          <p class="card-excerpt">The prestige drama's culminating episode drew 31 million simultaneous viewers globally — a record for streaming television.</p>
+          <div class="card-footer"><span class="card-author">Keiko Walsh</span><span class="card-date">May 19</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPORTS -->
+<section class="section-block fade-in" id="sports">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Sports</h2>
+      <a href="#" class="section-link">More Sports →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+      <div class="feature-wide" style="grid-column:1/-1">
+        <div class="feature-img">
+          <div style="background:linear-gradient(135deg,#001a00,#003300,#002200);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="100" height="70" viewBox="0 0 100 70" fill="none" opacity="0.4"><ellipse cx="50" cy="35" rx="40" ry="25" stroke="white" stroke-width="1.5"/><ellipse cx="50" cy="35" rx="25" ry="12" stroke="white" stroke-width="1" opacity="0.5"/><circle cx="50" cy="35" r="5" stroke="white" stroke-width="1.5"/><line x1="50" y1="10" x2="50" y2="60" stroke="white" stroke-width="1" opacity="0.4"/><line x1="10" y1="35" x2="90" y2="35" stroke="white" stroke-width="1" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="feature-body">
+          <span class="feature-tag">⚽ Champions League</span>
+          <div class="feature-title"><a href="#">Real Madrid's Comeback Win Cements Their Status as Europe's Greatest Club of This Era</a></div>
+          <p class="feature-excerpt">Trailing 2–0 at halftime, Los Blancos produced one of football's all-time great second-half performances, capped by a stunning overtime winner.</p>
+          <div class="feature-meta"><strong>Luis Fernandez</strong> · Football Correspondent · 10 min read</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#0a0a2a,#1a1a4a);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="60" height="50" viewBox="0 0 60 50" fill="none" opacity="0.5"><circle cx="30" cy="20" r="15" stroke="white" stroke-width="1.5"/><line x1="30" y1="35" x2="30" y2="48" stroke="white" stroke-width="1.5"/><line x1="18" y1="42" x2="42" y2="42" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">NBA</div>
+          <div class="card-title"><a href="#">Wembayana Named MVP in His Third Season as Spurs Reach Conference Finals</a></div>
+          <p class="card-excerpt">The generational talent continues to shatter records while elevating San Antonio to genuine championship contention.</p>
+          <div class="card-footer"><span class="card-author">Darnell Smith</span><span class="card-date">May 21</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#1a0a00,#3a1a00);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="60" height="50" viewBox="0 0 60 50" fill="none" opacity="0.5"><path d="M10 40 Q30 10 50 40" stroke="white" stroke-width="2" fill="none"/><circle cx="30" cy="28" r="5" fill="white" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Tennis</div>
+          <div class="card-title"><a href="#">Roland Garros: Sinner vs. Alcaraz Final Set to Be Biggest Match of the Decade</a></div>
+          <p class="card-excerpt">Both players arrived at the Paris final without dropping a single set — an unprecedented feat that promises an epic showdown.</p>
+          <div class="card-footer"><span class="card-author">Claire Dubois</span><span class="card-date">May 20</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OPINION -->
+<section class="section-block fade-in" id="opinion">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Opinion & Analysis</h2>
+      <a href="#" class="section-link">All Opinion →</a>
+    </div>
+    <div class="opinion-cards">
+      <div class="opinion-card">
+        <div class="op-author">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#c8381a,#e84a26);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0">EV</div>
+          <div><div class="op-name">Elena Vasquez</div><div class="op-role">Chief Political Correspondent</div></div>
+        </div>
+        <div class="op-title"><a href="#">The Treaty That Could Make or Break the Next Decade of Technological Governance</a></div>
+        <p class="op-excerpt">What Geneva got right, what it got wrong, and why the implementation phase is where everything will actually be decided.</p>
+      </div>
+      <div class="opinion-card">
+        <div class="op-author">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#185fa5,#378add);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0">RK</div>
+          <div><div class="op-name">Rachel Kim</div><div class="op-role">Democracy & Society Editor</div></div>
+        </div>
+        <div class="op-title"><a href="#">Stop Treating AI Regulation as a Technical Problem. It's a Political One.</a></div>
+        <p class="op-excerpt">Engineers shouldn't be setting the terms of a debate that will fundamentally reshape democratic society for generations.</p>
+      </div>
+      <div class="opinion-card">
+        <div class="op-author">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#0f6e56,#1d9e75);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0">JO</div>
+          <div><div class="op-name">James Okafor</div><div class="op-role">Economics Columnist</div></div>
+        </div>
+        <div class="op-title"><a href="#">Why the New Inflation Numbers Should Make Every Central Banker Uncomfortable</a></div>
+        <p class="op-excerpt">The data looks good on the surface. Underneath, structural pressures are building that no rate decision can easily address.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CULTURE -->
+<section class="section-block fade-in" id="culture">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Culture</h2>
+      <a href="#" class="section-link">More Culture →</a>
+    </div>
+    <div class="cards-grid">
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#200a30,#3a1050,#280840);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><rect x="15" y="5" width="50" height="50" rx="2" stroke="white" stroke-width="1.5"/><line x1="25" y1="20" x2="55" y2="20" stroke="white" stroke-width="1" opacity="0.6"/><line x1="25" y1="28" x2="55" y2="28" stroke="white" stroke-width="1" opacity="0.4"/><line x1="25" y1="36" x2="45" y2="36" stroke="white" stroke-width="1" opacity="0.4"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Literature</div>
+          <div class="card-title"><a href="#">Booker Prize Longlist Features Five Debut Novelists in Unprecedented Year for New Voices</a></div>
+          <p class="card-excerpt">The 2026 list signals a dramatic generational shift in literary fiction, with emerging writers from the Global South dominating selections.</p>
+          <div class="card-footer"><span class="card-author">Amara Osei</span><span class="card-date">May 21</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#200a10,#401020,#300a18);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><circle cx="25" cy="30" r="15" stroke="white" stroke-width="1.5"/><circle cx="55" cy="30" r="15" stroke="white" stroke-width="1.5"/><path d="M40 18 Q50 30 40 42" stroke="white" stroke-width="1.5" fill="none"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Art</div>
+          <div class="card-title"><a href="#">MoMA's AI-Human Collaborative Exhibition Redefines the Boundaries of Artistic Authorship</a></div>
+          <p class="card-excerpt">The groundbreaking show presents 60 works created through extended creative dialogues between human artists and AI systems.</p>
+          <div class="card-footer"><span class="card-author">Isabelle Fontaine</span><span class="card-date">May 20</span></div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="card-img">
+          <div style="background:linear-gradient(135deg,#0a1a20,#102535,#0a1a28);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="80" height="60" viewBox="0 0 80 60" fill="none" opacity="0.5"><path d="M20 45 Q30 20 40 35 Q50 50 60 25" stroke="white" stroke-width="2" fill="none"/><circle cx="40" cy="15" r="8" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-cat">Fashion</div>
+          <div class="card-title"><a href="#">Paris Fashion Week Goes Carbon-Zero: How Sustainability Became the Industry's New Status Symbol</a></div>
+          <p class="card-excerpt">The most prestigious houses are competing not on exclusivity but on environmental credentials — and the consumer response is transformative.</p>
+          <div class="card-footer"><span class="card-author">Léa Moreau</span><span class="card-date">May 19</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="section-block fade-in" id="video">
+  <div class="wrapper">
+    <div class="section-header">
+      <h2 class="section-title">Video</h2>
+      <a href="#" class="section-link">Watch More →</a>
+    </div>
+    <div class="media-grid">
+      <div class="media-card">
+        <div class="media-img">
+          <div style="background:linear-gradient(180deg,#0f1e3a,#1a3a6e);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="50" height="70" viewBox="0 0 50 70" fill="none" opacity="0.4"><rect x="5" y="10" width="40" height="55" rx="3" stroke="white" stroke-width="1.5"/><circle cx="25" cy="35" r="12" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+          <div class="play-btn"><div class="play-icon">▶</div></div>
+        </div>
+        <div class="media-body">
+          <div class="media-title">Inside the Geneva AI Summit: Full Press Conference</div>
+          <div class="media-dur">48:22 · Politics</div>
+        </div>
+      </div>
+      <div class="media-card">
+        <div class="media-img">
+          <div style="background:linear-gradient(180deg,#1a1000,#3a2000);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="50" height="70" viewBox="0 0 50 70" fill="none" opacity="0.4"><polyline points="5,60 15,40 25,48 35,25 45,30" stroke="white" stroke-width="2" fill="none"/></svg>
+          </div>
+          <div class="play-btn"><div class="play-icon">▶</div></div>
+        </div>
+        <div class="media-body">
+          <div class="media-title">Markets in 60 Seconds: Record-Breaking Session Explained</div>
+          <div class="media-dur">1:02 · Business</div>
+        </div>
+      </div>
+      <div class="media-card">
+        <div class="media-img">
+          <div style="background:linear-gradient(180deg,#001a00,#003300);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="50" height="70" viewBox="0 0 50 70" fill="none" opacity="0.4"><ellipse cx="25" cy="35" rx="18" ry="12" stroke="white" stroke-width="1.5"/><circle cx="25" cy="35" r="4" fill="white" opacity="0.5"/></svg>
+          </div>
+          <div class="play-btn"><div class="play-icon">▶</div></div>
+        </div>
+        <div class="media-body">
+          <div class="media-title">Champions League Final: All Goals & Highlights</div>
+          <div class="media-dur">12:47 · Sports</div>
+        </div>
+      </div>
+      <div class="media-card">
+        <div class="media-img">
+          <div style="background:linear-gradient(180deg,#1a001a,#350035);height:100%;display:flex;align-items:center;justify-content:center">
+            <svg width="50" height="70" viewBox="0 0 50 70" fill="none" opacity="0.4"><rect x="10" y="20" width="30" height="35" rx="2" stroke="white" stroke-width="1.5"/><circle cx="25" cy="15" r="6" stroke="white" stroke-width="1.5"/></svg>
+          </div>
+          <div class="play-btn"><div class="play-icon">▶</div></div>
+        </div>
+        <div class="media-body">
+          <div class="media-title">Cannes 2026: Red Carpet, Reactions & the Palme d'Or</div>
+          <div class="media-dur">22:15 · Culture</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section fade-in" id="newsletter">
+  <div class="newsletter-inner">
+    <div class="newsletter-eyebrow">Stay Informed</div>
+    <div class="newsletter-title">News that <em>matters,</em><br>every morning.</div>
+    <p class="newsletter-desc">Join 2.4 million readers who start their day with Encor's curated briefing — sharp, clear, and worth your time.</p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="Your email address">
+      <button>Subscribe Free</button>
+    </div>
+    <p class="newsletter-note">No spam. Unsubscribe anytime. We respect your privacy.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">Enc<span>o</span>r</div>
+        <p class="footer-tagline">Quality journalism for a complex world. Independent, rigorous, and relentlessly curious.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn" title="Twitter/X">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="#" class="social-btn" title="Facebook">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="social-btn" title="Instagram">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+          <a href="#" class="social-btn" title="LinkedIn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="#" class="social-btn" title="YouTube">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">News</div>
+        <ul class="footer-links">
+          <li><a href="#">Politics</a></li>
+          <li><a href="#">Business</a></li>
+          <li><a href="#">Technology</a></li>
+          <li><a href="#">Science</a></li>
+          <li><a href="#">Health</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Culture</div>
+        <ul class="footer-links">
+          <li><a href="#">Entertainment</a></li>
+          <li><a href="#">Sports</a></li>
+          <li><a href="#">Arts</a></li>
+          <li><a href="#">Travel</a></li>
+          <li><a href="#">Food</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a href="#">About Encor</a></li>
+          <li><a href="#">Our Journalists</a></li>
+          <li><a href="#">Editorial Standards</a></li>
+          <li><a href="#">Advertise</a></li>
+          <li><a href="#">Careers</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Encor Media Group. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookie Settings</a>
+        <a href="#">Contact Us</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('sunIcon').style.display = isDark ? 'block' : 'none';
+  document.getElementById('moonIcon').style.display = isDark ? 'none' : 'block';
+}
+
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+function openSearch() {
+  document.getElementById('searchOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+
+function closeSearch(e) {
+  if (e.target === document.getElementById('searchOverlay')) {
+    document.getElementById('searchOverlay').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('searchOverlay').classList.remove('open');
+    document.getElementById('mobileMenu').classList.remove('open');
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+    e.preventDefault();
+    openSearch();
+  }
+});
+
+function vote(el) {
+  document.querySelectorAll('.poll-opt').forEach(o => {
+    o.style.background = '';
+    o.style.borderColor = '';
+    o.style.color = '';
+  });
+  el.style.background = 'var(--accent)';
+  el.style.borderColor = 'var(--accent)';
+  el.style.color = 'white';
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+document.querySelectorAll('.nav-links a').forEach(link => {
+  link.addEventListener('click', function() {
+    document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+const newsletterBtn = document.querySelector('.newsletter-form button');
+if (newsletterBtn) {
+  newsletterBtn.addEventListener('click', function() {
+    const input = this.previousElementSibling;
+    if (input.value && input.value.includes('@')) {
+      this.textContent = '✓ You\'re in!';
+      this.style.background = '#1d9e75';
+      input.value = '';
+      input.disabled = true;
+    }
+  });
+}
+</script>
+</body>
+</html>
